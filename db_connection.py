@@ -16,6 +16,6 @@ def get_connection():
             database=os.getenv("DB_NAME")
         )
         return connection
-    except mysql.connector.Error as err:
+    except mysql.Error as err:
         print(f"Error al conectar la DB: {err}")
         return None

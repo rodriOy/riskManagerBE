@@ -5,7 +5,6 @@ from nltk.stem import SnowballStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 import nltk
 import numpy as np
-
 from app.db import load_data_from_db
 
 data = load_data_from_db()

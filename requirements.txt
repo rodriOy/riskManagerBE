@@ -4,3 +4,5 @@ langdetect
 nltk
 scikit-learn
 numpy
+pymysql
+python-dotenv
