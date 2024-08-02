@@ -1,0 +1,6 @@
+Flask
+Flask-SocketIO
+langdetect
+nltk
+scikit-learn
+numpy
