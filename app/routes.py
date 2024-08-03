@@ -11,6 +11,7 @@ ids = [row[0] for row in data]
 categories = [row[2] for row in data]
 
 
+# EP para el selector de mercaderia
 @bp.route('/predict', methods=['POST'])
 def predict():
     input_text = request.json.get('text')
@@ -22,14 +23,7 @@ def predict():
     return jsonify(predictions)
 
 
-@bp.route('/submit', methods=['POST'])
-def submit():
-    mercaderia_id = request.form.get('mercaderiaId')
-    valor = request.form.get('valor')
-    logging.debug(f"Mercadería ID: {mercaderia_id}, Valor: {valor}")
-    return jsonify({"message": "Formulario enviado.", "mercaderiaId": mercaderia_id, "valor": valor})
-
-
+# ep para asociar categoria con seccion
 @bp.route('/associate', methods=['POST'])
 def associate():
     seccion_id = request.json.get('seccion_id')
@@ -46,6 +40,7 @@ def associate():
         return jsonify({"error": str(e)}), 500
 
 
+# ep para obtener categorias
 @bp.route('/categorias', methods=['GET'])
 def categorias():
     try:
@@ -56,6 +51,7 @@ def categorias():
         return jsonify({"error": str(e)}), 500
 
 
+# ep para obtener secciones
 @bp.route('/secciones', methods=['GET'])
 def secciones():
     try:
@@ -66,6 +62,7 @@ def secciones():
         return jsonify({"error": str(e)}), 500
 
 
+# ep para obtener medidas de seguridad
 @bp.route('/medidas', methods=['GET'])
 def medidas():
     try:
@@ -76,26 +73,31 @@ def medidas():
         return jsonify({"error": str(e)}), 500
 
 
+# ep para asociar seccion con medida de seguridad
 @bp.route('/associate_seccion_medida', methods=['POST'])
 def associate_seccion_medida():
     seccion_id = request.json.get('seccion_id')
     medida_id = request.json.get('medida_id')
+    cotainf = request.json.get('cotainf')
+    cotasup = request.json.get('cotasup')
 
-    if not seccion_id or not medida_id:
-        return jsonify({"error": "Se requiere seccion_id y medida_id"}), 400
+    if not seccion_id or not medida_id or cotainf is None or cotasup is None:
+        return jsonify({"error": "Se requiere seccion_id, medida_id, cotainf y cotasup"}), 400
 
     try:
-        associate_section_with_security_measure(seccion_id, medida_id)
+        associate_section_with_security_measure(seccion_id, medida_id, cotainf, cotasup)
         return jsonify({"message": "Asociación completada."}), 200
     except Exception as e:
         logging.error(f"Error al asociar: {e}")
         return jsonify({"error": str(e)}), 500
 
 
+# ep para obtener detalles de mercaderia
 @bp.route('/mercaderia/<int:mercaderia_id>', methods=['GET'])
 def mercaderia_details(mercaderia_id):
+    SAT = request.args.get('SAT', type=int)
     try:
-        details = get_mercaderia_details(mercaderia_id)
+        details = get_mercaderia_details(mercaderia_id, SAT)
         if details:
             return jsonify(details), 200
         else:

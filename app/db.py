@@ -55,12 +55,12 @@ def get_security_measures():
     return [{"idmedidasseguridad": row[0], "medida": row[1]} for row in measures]
 
 
-def associate_section_with_security_measure(seccion_id, medida_id):
+def associate_section_with_security_measure(seccion_id, medida_id, cotainf, cotasup):
     connection = get_connection()
     cursor = connection.cursor()
     try:
-        cursor.execute("INSERT INTO seccion_medidas (seccion_id, idmedidasseguridad) VALUES (?, ?)",
-                       (seccion_id, medida_id))
+        cursor.execute("INSERT INTO seccion_medidas (seccion_id, idmedidasseguridad, cotainf, cotasup) VALUES (?, ?, "
+                       "?, ?)", (seccion_id, medida_id, cotainf, cotasup))
         connection.commit()
     except Exception as e:
         connection.rollback()
@@ -70,14 +70,14 @@ def associate_section_with_security_measure(seccion_id, medida_id):
         connection.close()
 
 
-def get_mercaderia_details(mercaderia_id):
+def get_mercaderia_details(mercaderia_id, sat):
     connection = get_connection()
     cursor = connection.cursor()
     try:
         # Obtener la sección asociada a la mercadería
         cursor.execute(
-            "SELECT s.seccion_id, s.seccion_nombre FROM mercaderia m JOIN categoria c ON m.idcategoria = "
-            "c.idcategoria JOIN seccion s ON c.seccion_id = s.seccion_id WHERE m.idmercaderia = ?",
+            "SELECT s.seccion_id, s.seccion_nombre FROM mercaderia m JOIN categoria c ON m.idcategoria = c.idcategoria "
+            "JOIN seccion s ON c.seccion_id = s.seccion_id WHERE m.idmercaderia = ?",
             (mercaderia_id,))
         seccion = cursor.fetchone()
 
@@ -88,15 +88,17 @@ def get_mercaderia_details(mercaderia_id):
 
         # Obtener las medidas de seguridad asociadas a la sección
         cursor.execute(
-            "SELECT ms.idmedidasseguridad, ms.medida FROM seccion_medidas sm JOIN medidasseguridad ms ON "
-            "sm.idmedidasseguridad = ms.idmedidasseguridad WHERE sm.seccion_id = ?",
-            (seccion_id,))
+            "SELECT ms.idmedidasseguridad, ms.medida, sm.cotainf, sm.cotasup FROM seccion_medidas sm "
+            "JOIN medidasseguridad ms ON sm.idmedidasseguridad = ms.idmedidasseguridad WHERE sm.seccion_id = ? AND "
+            "sm.cotainf <= ? AND sm.cotasup >= ?",
+            (seccion_id, sat, sat))
         medidas = cursor.fetchall()
 
         return {
             "seccion_id": seccion_id,
             "seccion_nombre": seccion_nombre,
-            "medidas": [{"idmedidasseguridad": row[0], "medida": row[1]} for row in medidas]
+            "medidas": [{"idmedidasseguridad": row[0], "medida": row[1], "cotainf": row[2], "cotasup": row[3]} for row
+                        in medidas]
         }
     finally:
         cursor.close()
