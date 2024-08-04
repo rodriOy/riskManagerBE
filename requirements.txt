@@ -1,5 +1,6 @@
 Flask
 Flask-SocketIO
+Flask-Cors
 langdetect
 nltk
 scikit-learn

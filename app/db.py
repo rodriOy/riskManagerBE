@@ -39,7 +39,8 @@ def create_category(categorianombre):
     connection = get_connection()
     cursor = connection.cursor()
     try:
-        cursor.execute("INSERT INTO categoria (categorianombre) VALUES (?)", (categorianombre,))
+        query = "INSERT INTO categoria (categorianombre) VALUES (%s)"
+        cursor.execute(query, (categorianombre,))
         connection.commit()
     except Exception as e:
         connection.rollback()
@@ -63,7 +64,8 @@ def create_section(seccion_nombre):
     connection = get_connection()
     cursor = connection.cursor()
     try:
-        cursor.execute("INSERT INTO seccion (seccion_nombre) VALUES (?)", (seccion_nombre,))
+        query = "INSERT INTO seccion (seccion_nombre) VALUES (%s)"
+        cursor.execute(query, (seccion_nombre,))
         connection.commit()
     except Exception as e:
         connection.rollback()
@@ -87,7 +89,8 @@ def create_security_measure(medida_nueva):
     connection = get_connection()
     cursor = connection.cursor()
     try:
-        cursor.execute("INSERT INTO medidasseguridad (medida) VALUES (?)", (medida_nueva,))
+        query = "INSERT INTO medidasseguridad (medida) VALUES (%s)"
+        cursor.execute(query, (medida_nueva,))
         connection.commit()
     except Exception as e:
         connection.rollback()

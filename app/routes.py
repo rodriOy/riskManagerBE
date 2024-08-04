@@ -10,7 +10,6 @@ import logging
 bp = Blueprint('routes', __name__)
 CORS(bp)
 
-
 data = load_data_from_db()
 texts = [row[1] for row in data]
 ids = [row[0] for row in data]
@@ -72,6 +71,7 @@ def create_categoria():
         logging.error(f"Error al crear categoría: {e}")
         return jsonify({"error": str(e)}), 500
 
+
 # ep para obtener secciones
 @bp.route('/secciones', methods=['GET'])
 def secciones():
@@ -97,6 +97,7 @@ def create_seccion():
     except Exception as e:
         logging.error(f"Error al crear sección: {e}")
         return jsonify({"error": str(e)}), 500
+
 
 # ep para obtener medidas de seguridad
 @bp.route('/medidas', methods=['GET'])
