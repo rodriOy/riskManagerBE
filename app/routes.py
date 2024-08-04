@@ -1,4 +1,6 @@
 from flask import Blueprint, request, jsonify
+from flask_cors import CORS
+
 from app.utils import detect_language, preprocess_text, get_predictions
 from app.db import load_data_from_db, associate_section_with_category, get_sections, get_categories, \
     get_security_measures, associate_section_with_security_measure, get_mercaderia_details, create_category, \
@@ -6,6 +8,9 @@ from app.db import load_data_from_db, associate_section_with_category, get_secti
 import logging
 
 bp = Blueprint('routes', __name__)
+CORS(bp)
+
+
 data = load_data_from_db()
 texts = [row[1] for row in data]
 ids = [row[0] for row in data]
@@ -139,7 +144,7 @@ def associate_seccion_medida():
         return jsonify({"error": str(e)}), 500
 
 
-# ep para obtener detalles de mercaderia
+# ep para obtener detalles de las medidas de seguridad segun Suma asegurada total y mercaderia
 @bp.route('/mercaderia/<int:mercaderia_id>', methods=['GET'])
 def mercaderia_details(mercaderia_id):
     SAT = request.args.get('SAT', type=int)
