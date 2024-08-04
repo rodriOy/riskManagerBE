@@ -35,6 +35,20 @@ def get_categories():
     return [{"idcategoria": row[0], "categorianombre": row[1], "seccion_id": row[2]} for row in categories]
 
 
+def create_category(categorianombre):
+    connection = get_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute("INSERT INTO categoria (categorianombre) VALUES (?)", (categorianombre,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise e
+    finally:
+        cursor.close()
+        connection.close()
+
+
 def get_sections():
     connection = get_connection()
     cursor = connection.cursor()
@@ -45,6 +59,20 @@ def get_sections():
     return [{"seccion_id": row[0], "seccion_nombre": row[1]} for row in sections]
 
 
+def create_section(seccion_nombre):
+    connection = get_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute("INSERT INTO seccion (seccion_nombre) VALUES (?)", (seccion_nombre,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise e
+    finally:
+        cursor.close()
+        connection.close()
+
+
 def get_security_measures():
     connection = get_connection()
     cursor = connection.cursor()
@@ -53,6 +81,20 @@ def get_security_measures():
     cursor.close()
     connection.close()
     return [{"idmedidasseguridad": row[0], "medida": row[1]} for row in measures]
+
+
+def create_security_measure(medida_nueva):
+    connection = get_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute("INSERT INTO medidasseguridad (medida) VALUES (?)", (medida_nueva,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise e
+    finally:
+        cursor.close()
+        connection.close()
 
 
 def associate_section_with_security_measure(seccion_id, medida_id, cotainf, cotasup):
