@@ -106,8 +106,6 @@ def associate_section_with_security_measure(seccion_id, medida_id, cotainf, cota
     try:
         query = "INSERT INTO seccion_medidas (seccion_id, idmedidasseguridad, cotainf, cotasup) VALUES (%s, %s, %s, %s)"
         cursor.execute(query, (seccion_id, medida_id, cotainf, cotasup))
-        #cursor.execute("INSERT INTO seccion_medidas (seccion_id, idmedidasseguridad, cotainf, cotasup) VALUES (?, ?, "
-        #               "?, ?)", (seccion_id, medida_id, cotainf, cotasup))
         connection.commit()
     except Exception as e:
         connection.rollback()
