@@ -120,10 +120,9 @@ def get_mercaderia_details(mercaderia_id, sat):
     cursor = connection.cursor()
     try:
         # Obtener la sección asociada a la mercadería
-        cursor.execute(
-            "SELECT s.seccion_id, s.seccion_nombre FROM mercaderia m JOIN categoria c ON m.idcategoria = c.idcategoria "
-            "JOIN seccion s ON c.seccion_id = s.seccion_id WHERE m.idmercaderia = ?",
-            (mercaderia_id,))
+        query = ("SELECT s.seccion_id, s.seccion_nombre FROM mercaderia m JOIN categoria c ON m.idcategoria = "
+                 "c.idcategoria JOIN seccion s ON c.seccion_id = s.seccion_id WHERE m.idmercaderia = %s")
+        cursor.execute(query, (mercaderia_id,))
         seccion = cursor.fetchone()
 
         if not seccion:
@@ -131,13 +130,21 @@ def get_mercaderia_details(mercaderia_id, sat):
 
         seccion_id, seccion_nombre = seccion
 
-        # Obtener las medidas de seguridad asociadas a la sección
-        cursor.execute(
-            "SELECT ms.idmedidasseguridad, ms.medida, sm.cotainf, sm.cotasup FROM seccion_medidas sm "
-            "JOIN medidasseguridad ms ON sm.idmedidasseguridad = ms.idmedidasseguridad WHERE sm.seccion_id = ? AND "
-            "sm.cotainf <= ? AND sm.cotasup >= ?",
-            (seccion_id, sat, sat))
-        medidas = cursor.fetchall()
+        if seccion_id == 1 and sat < 150001:
+            return {
+                "seccion_id": seccion_id,
+                "seccion_nombre": seccion_nombre,
+                "medidas": [{"idmedidasseguridad": 0, "medida": "No requiere medidas de seguridad", "cotainf": 0,
+                             "cotasup": 150000}]
+            }
+        else:
+            # Obtener las medidas de seguridad asociadas a la sección
+            query = (
+                "SELECT ms.idmedidasseguridad, ms.medida, sm.cotainf, sm.cotasup FROM seccion_medidas sm JOIN "
+                "medidasseguridad ms ON sm.idmedidasseguridad = ms.idmedidasseguridad WHERE sm.seccion_id = %s AND "
+                "sm.cotainf <= %s AND sm.cotasup >= %s")
+            cursor.execute(query, (seccion_id, sat, sat))
+            medidas = cursor.fetchall()
 
         return {
             "seccion_id": seccion_id,

@@ -8,6 +8,7 @@ import numpy as np
 from app.db import load_data_from_db
 
 data = load_data_from_db()
+# carga de datos para vectores
 texts = [row[1] for row in data]
 ids = [row[0] for row in data]
 categories = [row[2] for row in data]
