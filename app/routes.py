@@ -1,31 +1,29 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS
-
-from app.utils import detect_language, preprocess_text, get_predictions
-from app.db import load_data_from_db, associate_section_with_category, get_sections, get_categories, \
+from app.db import associate_section_with_category, get_sections, get_categories, \
     get_security_measures, associate_section_with_security_measure, get_mercaderia_details, create_category, \
     create_section, create_security_measure
 import logging
 
+from app.generative import generate
+
 bp = Blueprint('routes', __name__)
 CORS(bp)
 
-data = load_data_from_db()
-texts = [row[1] for row in data]
-ids = [row[0] for row in data]
-categories = [row[2] for row in data]
 
+@bp.route('/generate', methods=['GET'])
+def generate_route():
+    mercaderia = request.json.get('mercaderia')
 
-# EP para el selector de mercaderia
-@bp.route('/predict', methods=['POST'])
-def predict():
-    input_text = request.json.get('text')
-    language = detect_language(input_text)
-    logging.debug(f"Idioma detectado: {language}")
-    processed_input = preprocess_text(input_text, language)
-    predictions = get_predictions(processed_input, texts, ids)
-    logging.debug(f"Predicciones: {predictions}")
-    return jsonify(predictions)
+    if not mercaderia:
+        return jsonify({"error": "Se requiere mercaderia"}), 400
+
+    try:
+        categoria = generate(mercaderia)
+        print(categoria)
+        return categoria, 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # ep para asociar categoria con seccion

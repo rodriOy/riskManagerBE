@@ -1,9 +1,3 @@
-Flask
-Flask-SocketIO
-Flask-Cors
-langdetect
-nltk
-scikit-learn
-numpy
-pymysql
-python-dotenv
+Flask==2.1.1
+vertexai==0.1.0
+werkzeug==2.1.1

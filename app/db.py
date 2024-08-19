@@ -1,21 +1,12 @@
 from db_connection import get_connection
 
 
-def load_data_from_db():
-    connection = get_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT idmercaderia, mercaderianombre, idcategoria FROM mercaderia limit 20000")
-    mercaderia = cursor.fetchall()
-    cursor.close()
-    connection.close()
-    return mercaderia
-
-
 def associate_section_with_category(seccion_id, categoria_id):
     connection = get_connection()
     cursor = connection.cursor()
     try:
-        cursor.execute("UPDATE categoria SET seccion_id = ? WHERE idcategoria = ?", (seccion_id, categoria_id))
+        query = "UPDATE categoria SET seccion_id = %s WHERE idcategoria = %s"
+        cursor.execute(query, (seccion_id, categoria_id))
         connection.commit()
     except Exception as e:
         connection.rollback()
