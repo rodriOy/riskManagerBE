@@ -3,11 +3,10 @@ import json
 import vertexai
 from vertexai.generative_models import GenerativeModel, SafetySetting
 
-
 from app.db import get_categories
 
 
-def generate(mercaderia):
+def clasify(mercaderia):
     vertexai.init(project="siw-cargo-testing", location="us-central1")
     model = GenerativeModel(
         "gemini-1.5-flash-001",
@@ -40,9 +39,9 @@ def generate(mercaderia):
         print(full_text)
     return json_data
 
+
 categories = get_categories()
 categories_text = "\n".join([f"({category['idcategoria']}, {category['categorianombre']})" for category in categories])
-
 
 textsi_1 = """Sos un clasificador de mercaderias. Dada una o mas mercaderias, tu tarea sera dar la categoria de ellas 
 segun las que sean provistas. Debes responder un JSON con idcategoria y categoria."""

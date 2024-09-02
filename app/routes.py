@@ -5,7 +5,7 @@ from app.db import associate_section_with_category, get_sections, get_categories
     create_section, create_security_measure
 import logging
 
-from app.generative import generate
+from app.generative import clasify
 
 bp = Blueprint('routes', __name__)
 CORS(bp)
@@ -19,7 +19,7 @@ def generate_route():
         return jsonify({"error": "Se requiere mercaderia"}), 400
 
     try:
-        categoria = generate(mercaderia)
+        categoria = clasify(mercaderia)
         print(categoria)
         return categoria, 200
     except Exception as e:
@@ -144,11 +144,14 @@ def associate_seccion_medida():
 
 
 # ep para obtener detalles de las medidas de seguridad segun Suma asegurada total y mercaderia
-@bp.route('/mercaderia/<int:mercaderia_id>', methods=['GET'])
-def mercaderia_details(mercaderia_id):
+@bp.route('/mercaderia', methods=['GET'])
+def mercaderia_details():
     SAT = request.args.get('SAT', type=int)
+    mercaderia = request.args.get('mercaderia', type=str)
     try:
-        details = get_mercaderia_details(mercaderia_id, SAT)
+        categoria = clasify(mercaderia)
+        idcategoria = categoria.get('idcategoria')
+        details = get_mercaderia_details(idcategoria, SAT)
         if details:
             return jsonify(details), 200
         else:

@@ -106,14 +106,14 @@ def associate_section_with_security_measure(seccion_id, medida_id, cotainf, cota
         connection.close()
 
 
-def get_mercaderia_details(mercaderia_id, sat):
+def get_mercaderia_details(categoria_id, sat):
     connection = get_connection()
     cursor = connection.cursor()
     try:
         # Obtener la sección asociada a la mercadería
-        query = ("SELECT s.seccion_id, s.seccion_nombre FROM mercaderia m JOIN categoria c ON m.idcategoria = "
-                 "c.idcategoria JOIN seccion s ON c.seccion_id = s.seccion_id WHERE m.idmercaderia = %s")
-        cursor.execute(query, (mercaderia_id,))
+        query = ("SELECT s.seccion_id, s.seccion_nombre FROM  categoria c "
+                 " JOIN seccion s ON c.seccion_id = s.seccion_id WHERE c.idcategoria = %s")
+        cursor.execute(query, (categoria_id,))
         seccion = cursor.fetchone()
 
         if not seccion:
