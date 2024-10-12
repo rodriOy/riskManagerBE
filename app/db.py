@@ -146,3 +146,15 @@ def get_mercaderia_details(categoria_id, sat):
     finally:
         cursor.close()
         connection.close()
+
+def get_mercaderia_names_and_categories():
+    connection = get_connection()
+    cursor = connection.cursor()
+    try:
+        query = "SELECT mercaderianombre, idcategoria FROM mercaderia GROUP BY mercaderianombre, idcategoria"
+        cursor.execute(query)
+        mercaderia = cursor.fetchall()
+        return [{"mercaderia_nombre": row[0], "idcategoria": row[1]} for row in mercaderia]
+    finally:
+        cursor.close()
+        connection.close()
