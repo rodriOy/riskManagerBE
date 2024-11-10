@@ -15,28 +15,31 @@ def clasify(mercaderia):
     text1 = f"""segun estas categorias:
     {categories_text}
     que categoria tiene la mercaderia : {mercaderia}"""
-    responses = model.generate_content(
-        [text1],
-        generation_config=generation_config,
-        safety_settings=safety_settings,
-        stream=True,
-    )
-    full_text = ""
-    for response in responses:
-        full_text += response.text
-
-    cleaned_text = full_text.strip().strip("```").strip().strip("json").strip()
-
     try:
-        # Intentar transformar el texto completo en un JSON
-        json_data = json.loads(cleaned_text)
-        print("JSON generado:")
-        print(json.dumps(json_data, indent=4))  # Imprimir el JSON de manera legible
-    except json.JSONDecodeError as e:
-        print(f"Error al decodificar JSON: {e}")
-        print("Texto recibido:")
-        print(full_text)
-    return json_data
+        responses = model.generate_content(
+            [text1],
+            generation_config=generation_config,
+            safety_settings=safety_settings,
+            stream=True,
+        )
+        full_text = ""
+        for response in responses:
+            full_text += response.text
+
+        cleaned_text = full_text.strip().strip("```").strip().strip("json").strip()
+
+        try:
+            # Intentar transformar el texto completo en un JSON
+            json_data = json.loads(cleaned_text)
+            print("JSON generado:")
+            print(json.dumps(json_data, indent=4))  # Imprimir el JSON de manera legible
+        except json.JSONDecodeError as e:
+            print(f"Error al decodificar JSON: {e}")
+            print("Texto recibido:")
+            print(full_text)
+        return json_data
+    except Exception as e:
+        return {"error": "Error en la generación de contenido", "detalles": str(e)}
 
 
 categories = get_categories()
