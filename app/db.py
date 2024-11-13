@@ -158,3 +158,19 @@ def get_mercaderia_names_and_categories():
     finally:
         cursor.close()
         connection.close()
+
+def get_random_half_mercaderia_names_and_categories():
+    import random
+    connection = get_connection()
+    cursor = connection.cursor()
+    try:
+        query = ("SELECT mercaderianombre, categoria.idcategoria, categoria.categorianombre FROM mercaderia "
+                 "join categoria on mercaderia.idcategoria = categoria.idcategoria GROUP BY mercaderianombre, idcategoria")
+        cursor.execute(query)
+        mercaderia = cursor.fetchall()
+        half_size = len(mercaderia) // 2
+        random_mercaderia = random.sample(mercaderia, half_size)
+        return [{"mercaderia_nombre": row[0], "idcategoria": row[1], "categoria_nombre": row[2] } for row in random_mercaderia]
+    finally:
+        cursor.close()
+        connection.close()

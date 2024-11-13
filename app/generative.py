@@ -7,14 +7,15 @@ from app.db import get_categories
 
 
 def clasify(mercaderia):
-    vertexai.init(project="siw-cargo-testing", location="us-central1")
+    vertexai.init(project="1002854262523", location="us-central1")
     model = GenerativeModel(
-        "gemini-1.5-flash-001",
+        "projects/1002854262523/locations/us-central1/endpoints/7062894360437719040",
         system_instruction=[textsi_1]
     )
     text1 = f"""segun estas categorias:
     {categories_text}
     que categoria tiene la mercaderia : {mercaderia}"""
+
     try:
         responses = model.generate_content(
             [text1],
@@ -26,7 +27,7 @@ def clasify(mercaderia):
         for response in responses:
             full_text += response.text
 
-        cleaned_text = full_text.strip().strip("```").strip().strip("json").strip()
+        cleaned_text = full_text.replace("'", '"').strip().strip("```").strip().strip("json").strip()
 
         try:
             # Intentar transformar el texto completo en un JSON
@@ -46,7 +47,7 @@ categories = get_categories()
 categories_text = "\n".join([f"({category['idcategoria']}, {category['categorianombre']})" for category in categories])
 
 textsi_1 = """Sos un clasificador de mercaderias. Dada una o mas mercaderias, tu tarea sera dar la categoria de ellas 
-segun las que sean provistas. Debes responder un JSON con idcategoria y categoria."""
+segun las que sean provistas. Debes responder un JSON con idcategoria y categoria. El json debe tener el siguiente formato: {"idcategoria2: , "categoria_nombre": }"""
 generation_config = {
     "max_output_tokens": 8192,
     "temperature": 1,
